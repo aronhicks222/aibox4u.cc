@@ -126,7 +126,7 @@ async def create_tool(tool_data: ToolCreate, current_user: dict = Depends(get_cu
 
 @api_router.put("/tools/{tool_id}")
 async def update_tool(tool_id: str, tool_data: ToolUpdate, current_user: dict = Depends(get_current_admin_user)):
-    tool = await db.tools.find_one({"id": tool_id})
+    tool = await db.tools.find_one({"id": tool_id}, {"_id": 0})
     if not tool:
         raise HTTPException(status_code=404, detail="Tool not found")
     
@@ -134,7 +134,7 @@ async def update_tool(tool_id: str, tool_data: ToolUpdate, current_user: dict = 
     if update_data:
         await db.tools.update_one({"id": tool_id}, {"$set": update_data})
     
-    updated_tool = await db.tools.find_one({"id": tool_id})
+    updated_tool = await db.tools.find_one({"id": tool_id}, {"_id": 0})
     return {"tool": updated_tool}
 
 @api_router.delete("/tools/{tool_id}")
