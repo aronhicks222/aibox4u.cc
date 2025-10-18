@@ -69,8 +69,8 @@ const Login = () => {
                 className="mt-1"
               />
             </div>
-            <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 text-white">
-              Sign In
+            <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 text-white" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
           <div className="mt-6 text-center">
