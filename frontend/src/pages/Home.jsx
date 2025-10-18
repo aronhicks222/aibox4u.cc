@@ -13,9 +13,40 @@ const Home = () => {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [priceFilter, setPriceFilter] = useState('All');
   const [sortBy, setSortBy] = useState('Name');
+  const [tools, setTools] = useState([]);
+  const [categories, setCategories] = useState(['All']);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchTools();
+    fetchCategories();
+  }, []);
+
+  const fetchTools = async () => {
+    try {
+      setLoading(true);
+      const response = await toolsAPI.getAll();
+      setTools(response.data.tools || []);
+    } catch (err) {
+      setError('Failed to load tools');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoriesAPI.getAll();
+      setCategories(response.data.categories || ['All']);
+    } catch (err) {
+      console.error('Failed to load categories', err);
+    }
+  };
 
   const filteredTools = useMemo(() => {
-    let filtered = mockTools;
+    let filtered = tools;
 
     // Search filter
     if (searchQuery) {
@@ -42,7 +73,9 @@ const Home = () => {
     }
 
     return filtered;
-  }, [searchQuery, categoryFilter, priceFilter, sortBy]);
+  }, [searchQuery, categoryFilter, priceFilter, sortBy, tools]);
+
+  const featuredTools = tools.filter(tool => tool.featured);
 
   return (
     <div className="min-h-screen bg-white">
