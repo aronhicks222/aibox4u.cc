@@ -108,7 +108,7 @@ async def get_tools(
     if pricing and pricing != "All":
         query["pricing"] = pricing
     
-    tools = await db.tools.find(query).sort("name", 1).to_list(1000)
+    tools = await db.tools.find(query, {"_id": 0}).sort("name", 1).to_list(1000)
     return {"tools": tools}
 
 @api_router.get("/tools/{tool_id}")
