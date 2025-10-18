@@ -335,9 +335,8 @@ def test_tools_endpoints(auth_token=None):
     except Exception as e:
         results.log_failure("GET /api/tools/{fake_id}", f"Request failed: {str(e)}")
     
-    # Admin-only endpoints (POST, PUT, DELETE) - Skip if no admin token
-    if auth_token:
-        print("\nNote: Skipping admin-only endpoints (POST, PUT, DELETE) - requires admin privileges")
+    # Note: Admin endpoints tested separately
+    print("\nNote: Admin endpoints (POST, PUT, DELETE) tested separately")
     
     return results
 
