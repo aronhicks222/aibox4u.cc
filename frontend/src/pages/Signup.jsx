@@ -107,8 +107,8 @@ const Signup = () => {
                 className="mt-1"
               />
             </div>
-            <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 text-white">
-              Create Account
+            <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 text-white" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
           <div className="mt-6 text-center">
