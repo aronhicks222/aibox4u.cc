@@ -128,8 +128,8 @@ export const mockTools = [
   {
     id: '10',
     name: 'HeyGen',
-    description: 'Create high-quality videos with HeyGen's AI video generator. Featuring Sora2, a multilingual platform that creates professional content in minutes.',
-    longDescription: 'Create high-quality videos with HeyGen's AI video generator. Featuring Sora2, a multilingual platform that creates professional, multilingual content in minutes. Now featuring Sora2, for instant scene and B-roll generation.',
+    description: 'Create high-quality videos with HeyGen AI video generator. Featuring Sora2, a multilingual platform that creates professional content in minutes.',
+    longDescription: 'Create high-quality videos with HeyGen AI video generator. Featuring Sora2, a multilingual platform that creates professional, multilingual content in minutes. Now featuring Sora2, for instant scene and B-roll generation.',
     category: 'Text-to-Video',
     pricing: 'Paid',
     tags: ['#AIavatars', '#UGC', '#Sora2'],
