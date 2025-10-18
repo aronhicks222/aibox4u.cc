@@ -222,10 +222,10 @@ const SubmitTool = () => {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white flex-1">
-                  Submit Tool
+                <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white flex-1" disabled={submitting}>
+                  {submitting ? 'Submitting...' : 'Submit Tool'}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate('/')} className="flex-1">
+                <Button type="button" variant="outline" onClick={() => navigate('/')} className="flex-1" disabled={submitting}>
                   Cancel
                 </Button>
               </div>
