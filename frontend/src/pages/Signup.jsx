@@ -5,13 +5,15 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
+import { authAPI } from '../api';
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -21,13 +23,29 @@ const Signup = () => {
       });
       return;
     }
-    // Mock signup
-    localStorage.setItem('user', JSON.stringify({ email: formData.email, name: formData.name }));
-    toast({
-      title: "Account Created!",
-      description: "Welcome to AI Box 4U",
-    });
-    navigate('/');
+    try {
+      setLoading(true);
+      const response = await authAPI.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      toast({
+        title: "Account Created!",
+        description: "Welcome to AI Box 4U",
+      });
+      navigate('/');
+    } catch (err) {
+      toast({
+        title: "Registration Failed",
+        description: err.response?.data?.detail || "An error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
