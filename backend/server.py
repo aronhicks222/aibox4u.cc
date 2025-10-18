@@ -113,7 +113,7 @@ async def get_tools(
 
 @api_router.get("/tools/{tool_id}")
 async def get_tool(tool_id: str):
-    tool = await db.tools.find_one({"id": tool_id})
+    tool = await db.tools.find_one({"id": tool_id}, {"_id": 0})
     if not tool:
         raise HTTPException(status_code=404, detail="Tool not found")
     return {"tool": tool}
