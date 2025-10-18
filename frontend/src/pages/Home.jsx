@@ -180,52 +180,66 @@ const Home = () => {
 
       {/* Tools Grid */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTools.map(tool => (
-            <Card key={tool.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
-              <Link to={`/tool/${tool.id}`}>
-                <img 
-                  src={tool.image} 
-                  alt={tool.name}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </Link>
-              <CardContent className="p-6">
-                <Link to={`/tool/${tool.id}`}>
-                  <h3 className="text-xl font-bold mb-2 hover:text-purple-600 transition-colors">{tool.name}</h3>
-                </Link>
-                
-                <div className="flex gap-2 mb-3">
-                  <Badge variant="secondary" className="bg-teal-500 text-white hover:bg-teal-600">
-                    {tool.category}
-                  </Badge>
-                </div>
-                
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {tool.tags.map((tag, idx) => (
-                    <Badge key={idx} variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{tool.description}</p>
-                
-                <div className="flex items-center justify-between">
-                  <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">{tool.pricing}</Badge>
-                  <Link to={`/tool/${tool.id}`}>
-                    <Button className="bg-pink-600 hover:bg-pink-700 text-white">Details</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        {filteredTools.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No tools found matching your criteria.</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+            <span className="ml-2 text-gray-600">Loading tools...</span>
           </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 text-lg">{error}</p>
+            <Button onClick={fetchTools} className="mt-4">Retry</Button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTools.map(tool => (
+                <Card key={tool.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
+                  <Link to={`/tool/${tool.id}`}>
+                    <img 
+                      src={tool.image} 
+                      alt={tool.name}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                  <CardContent className="p-6">
+                    <Link to={`/tool/${tool.id}`}>
+                      <h3 className="text-xl font-bold mb-2 hover:text-purple-600 transition-colors">{tool.name}</h3>
+                    </Link>
+                    
+                    <div className="flex gap-2 mb-3">
+                      <Badge variant="secondary" className="bg-teal-500 text-white hover:bg-teal-600">
+                        {tool.category}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {tool.tags.map((tag, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{tool.description}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">{tool.pricing}</Badge>
+                      <Link to={`/tool/${tool.id}`}>
+                        <Button className="bg-pink-600 hover:bg-pink-700 text-white">Details</Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            {filteredTools.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No tools found matching your criteria.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
