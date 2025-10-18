@@ -5,21 +5,35 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
+import { authAPI } from '../api';
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock login
-    localStorage.setItem('user', JSON.stringify({ email: formData.email, name: 'User' }));
-    toast({
-      title: "Login Successful!",
-      description: "Welcome back to AI Box 4U",
-    });
-    navigate('/');
+    try {
+      setLoading(true);
+      const response = await authAPI.login(formData);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back to AI Box 4U",
+      });
+      navigate('/');
+    } catch (err) {
+      toast({
+        title: "Login Failed",
+        description: err.response?.data?.detail || "Invalid email or password",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
