@@ -456,13 +456,19 @@ def main():
     all_results.failed += tools_results.failed
     all_results.errors.extend(tools_results.errors)
     
-    # Test 4: Submissions
+    # Test 4: Admin endpoints
+    admin_results = test_admin_endpoints()
+    all_results.passed += admin_results.passed
+    all_results.failed += admin_results.failed
+    all_results.errors.extend(admin_results.errors)
+    
+    # Test 5: Submissions
     submissions_results = test_submissions_endpoint()
     all_results.passed += submissions_results.passed
     all_results.failed += submissions_results.failed
     all_results.errors.extend(submissions_results.errors)
     
-    # Test 5: Categories
+    # Test 6: Categories
     categories_results = test_categories_endpoint()
     all_results.passed += categories_results.passed
     all_results.failed += categories_results.failed
