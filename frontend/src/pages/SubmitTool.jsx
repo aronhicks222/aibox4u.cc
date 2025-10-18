@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -8,11 +8,13 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
-import { categories } from '../mockData';
+import { submissionsAPI, categoriesAPI } from '../api';
 
 const SubmitTool = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [categories, setCategories] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -25,14 +27,38 @@ const SubmitTool = () => {
     submitterEmail: ''
   });
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoriesAPI.getAll();
+      setCategories((response.data.categories || []).filter(c => c !== 'All'));
+    } catch (err) {
+      console.error('Failed to load categories', err);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock submission
-    toast({
-      title: "Tool Submitted Successfully!",
-      description: "Thank you! We'll review your submission and add it to the directory soon.",
-    });
-    setTimeout(() => navigate('/'), 2000);
+    try {
+      setSubmitting(true);
+      await submissionsAPI.create(formData);
+      toast({
+        title: "Tool Submitted Successfully!",
+        description: "Thank you! We'll review your submission and add it to the directory soon.",
+      });
+      setTimeout(() => navigate('/'), 2000);
+    } catch (err) {
+      toast({
+        title: "Submission Failed",
+        description: err.response?.data?.detail || "An error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
