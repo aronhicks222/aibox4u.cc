@@ -121,6 +121,112 @@ def test_auth_endpoints():
     
     return results, user_token
 
+def test_admin_endpoints():
+    """Test admin-only endpoints"""
+    results = TestResults()
+    
+    print("\n👑 Testing Admin Endpoints")
+    print("-" * 40)
+    
+    # Login as admin
+    try:
+        login_data = {
+            "email": "admin@example.com",
+            "password": "AdminPass123!"
+        }
+        
+        response = requests.post(f"{BASE_URL}/auth/login", 
+                               json=login_data, headers=HEADERS)
+        
+        if response.status_code == 200:
+            data = response.json()
+            admin_token = data["token"]
+            results.log_success("Admin login successful")
+        else:
+            results.log_failure("Admin login", f"Status {response.status_code}: {response.text}")
+            return results
+            
+    except Exception as e:
+        results.log_failure("Admin login", f"Request failed: {str(e)}")
+        return results
+    
+    auth_headers = {**HEADERS, "Authorization": f"Bearer {admin_token}"}
+    
+    # Test: Create new tool
+    try:
+        tool_data = {
+            "name": "TestAI Admin Tool",
+            "description": "Admin-created AI tool for testing purposes",
+            "longDescription": "This is a comprehensive AI tool created by admin for testing the POST /api/tools endpoint. It includes advanced features for productivity and automation.",
+            "category": "Productivity",
+            "pricing": "Free",
+            "tags": ["AI", "Testing", "Admin"],
+            "image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&h=300&fit=crop",
+            "url": "https://testai-admin.com",
+            "featured": True
+        }
+        
+        response = requests.post(f"{BASE_URL}/tools", 
+                               json=tool_data, headers=auth_headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "tool" in data and data["tool"]["name"] == tool_data["name"]:
+                results.log_success("POST /api/tools - Create tool (admin)")
+                created_tool_id = data["tool"]["id"]
+            else:
+                results.log_failure("POST /api/tools", "Tool data mismatch")
+                return results
+        else:
+            results.log_failure("POST /api/tools", f"Status {response.status_code}: {response.text}")
+            return results
+            
+    except Exception as e:
+        results.log_failure("POST /api/tools", f"Request failed: {str(e)}")
+        return results
+    
+    # Test: Update tool
+    try:
+        update_data = {
+            "name": "TestAI Admin Tool Updated",
+            "description": "Updated admin-created AI tool",
+            "featured": False
+        }
+        
+        response = requests.put(f"{BASE_URL}/tools/{created_tool_id}", 
+                              json=update_data, headers=auth_headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "tool" in data and data["tool"]["name"] == update_data["name"]:
+                results.log_success("PUT /api/tools/{id} - Update tool (admin)")
+            else:
+                results.log_failure("PUT /api/tools/{id}", "Updated tool data mismatch")
+        else:
+            results.log_failure("PUT /api/tools/{id}", f"Status {response.status_code}: {response.text}")
+            
+    except Exception as e:
+        results.log_failure("PUT /api/tools/{id}", f"Request failed: {str(e)}")
+    
+    # Test: Delete tool
+    try:
+        response = requests.delete(f"{BASE_URL}/tools/{created_tool_id}", 
+                                 headers=auth_headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "message" in data:
+                results.log_success("DELETE /api/tools/{id} - Delete tool (admin)")
+            else:
+                results.log_failure("DELETE /api/tools/{id}", "Invalid response format")
+        else:
+            results.log_failure("DELETE /api/tools/{id}", f"Status {response.status_code}: {response.text}")
+            
+    except Exception as e:
+        results.log_failure("DELETE /api/tools/{id}", f"Request failed: {str(e)}")
+    
+    return results
+
 def test_tools_endpoints(auth_token=None):
     """Test tools endpoints"""
     results = TestResults()
