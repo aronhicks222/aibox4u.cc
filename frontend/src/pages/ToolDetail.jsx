@@ -1,15 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Heart } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Heart, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent } from '../components/ui/card';
-import { mockTools } from '../mockData';
+import { toolsAPI } from '../api';
 
 const ToolDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const tool = mockTools.find(t => t.id === id);
+  const [tool, setTool] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedTools, setRelatedTools] = useState([]);
+
+  useEffect(() => {
+    fetchTool();
+  }, [id]);
+
+  const fetchTool = async () => {
+    try {
+      setLoading(true);
+      const response = await toolsAPI.getById(id);
+      setTool(response.data.tool);
+      
+      // Fetch related tools
+      const allToolsResponse = await toolsAPI.getAll({ category: response.data.tool.category });
+      const related = (allToolsResponse.data.tools || []).filter(t => t.id !== id).slice(0, 3);
+      setRelatedTools(related);
+    } catch (err) {
+      console.error('Failed to load tool', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
 
   if (!tool) {
     return (
@@ -21,8 +52,6 @@ const ToolDetail = () => {
       </div>
     );
   }
-
-  const relatedTools = mockTools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gray-50">
