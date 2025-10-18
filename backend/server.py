@@ -203,7 +203,7 @@ async def get_favorites(current_user: dict = Depends(get_current_user)):
     
     # Get tool details for each favorite
     tool_ids = [fav["toolId"] for fav in favorites]
-    tools = await db.tools.find({"id": {"$in": tool_ids}}).to_list(1000)
+    tools = await db.tools.find({"id": {"$in": tool_ids}}, {"_id": 0}).to_list(1000)
     
     return {"favorites": tools}
 
